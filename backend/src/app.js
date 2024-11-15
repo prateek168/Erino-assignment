@@ -1,7 +1,11 @@
 // src/app.js
 import express from 'express';
 import contactRoutes from './routes/contactRoutes.js';
-import connectDb from './connectDb.js';
+import connectDb from './config/db.js';
+import dotenv from 'dotenv';
+import errorMiddleware from './middleware/errorMiddleware.js'; // Import error middleware
+
+dotenv.config();
 
 const app = express();
 
@@ -9,9 +13,13 @@ const app = express();
 app.use(express.json());
 
 // Routes
-app.use('/api/contacts', contactRoutes);
+// Change '/app/v1/contacts' to '/api/v1/contacts'
+app.use('/api/v1/contacts', contactRoutes);
 
-// Connect to database
+// Connect to the database
 connectDb();
+
+// Error handling middleware
+app.use(errorMiddleware);
 
 export default app;
