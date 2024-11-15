@@ -1,25 +1,34 @@
-// src/app.js
 import express from 'express';
 import contactRoutes from './routes/contactRoutes.js';
 import connectDb from './config/db.js';
 import dotenv from 'dotenv';
-import errorMiddleware from './middleware/errorMiddleware.js'; // Import error middleware
+import cors from 'cors';
+import errorMiddleware from './middleware/errorMiddleware.js';  
 
 dotenv.config();
 
 const app = express();
 
-// Middleware to parse JSON bodies
 app.use(express.json());
 
+const allowedOrigins = ['http://localhost:5173'];  
+const corsOptions = {
+  origin: (origin, callback) => {
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);  
+    } else {
+      callback(new Error('Not allowed by CORS'));  
+    }
+  },
+};
+app.use(cors(corsOptions)); // Apply CORS with options
+
 // Routes
-// Change '/app/v1/contacts' to '/api/v1/contacts'
 app.use('/api/v1/contacts', contactRoutes);
 
 // Connect to the database
 connectDb();
 
-// Error handling middleware
 app.use(errorMiddleware);
 
 export default app;
